@@ -19,7 +19,7 @@ class InputFieldListener(val networkHandler: NetworkHandler, val taskHistory: Ta
         val newTask = Task(textInput)
         taskHistory.add(newTask)
 
-        networkHandler.sendMessage(newTask, this)
+        networkHandler.postTask(newTask, this)
         textView.text = ""
         return true
     }
@@ -28,7 +28,7 @@ class InputFieldListener(val networkHandler: NetworkHandler, val taskHistory: Ta
         return actionId == EditorInfo.IME_ACTION_DONE || actionId == EditorInfo.IME_NULL
     }
 
-    override fun onPostItemUpdate(code: Int) {
+    override fun onUpdate(code: Int) {
         taskHistory.alertListeners()
     }
 }

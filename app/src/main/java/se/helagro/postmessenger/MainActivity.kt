@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.inputField
 import kotlinx.android.synthetic.main.activity_main.postLogList
 import se.helagro.postmessenger.network.NetworkHandler
+import se.helagro.postmessenger.network.NetworkHandlerListener
 import se.helagro.postmessenger.settings.SettingsActivity
 import se.helagro.postmessenger.taskhistory.TaskHistory
 
@@ -29,6 +30,12 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        networkHandler.getProjects(object : NetworkHandlerListener {
+            override fun onUpdate(code: Int) {
+
+            }
+        })
 
         setupViews()
     }
