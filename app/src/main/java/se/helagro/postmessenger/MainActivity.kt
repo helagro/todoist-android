@@ -2,59 +2,45 @@ package se.helagro.postmessenger
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.inputmethod.InputMethodManager
-import android.webkit.URLUtil
-import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.appcompat.app.AppCompatActivity
-import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.activity_main.inputField
+import kotlinx.android.synthetic.main.activity_main.postLogList
 import se.helagro.postmessenger.network.NetworkHandler
-import se.helagro.postmessenger.taskhistory.TaskHistory
 import se.helagro.postmessenger.settings.SettingsActivity
+import se.helagro.postmessenger.taskhistory.TaskHistory
 
 class MainActivity : AppCompatActivity() {
-    val taskHistory = TaskHistory()
-    private var networkHandler: NetworkHandler? = null
+    private val taskHistory = TaskHistory()
+    private var networkHandler: NetworkHandler = NetworkHandler()
 
 
     //=========== ENTRY POINTS ===========
 
     private val settingsLauncher = registerForActivityResult(StartActivityForResult()) { _: ActivityResult ->
-        doSetup()
+        setupViews()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        doSetup()
+        setupViews()
     }
 
+    override fun onResume() {
+        super.onResume()
 
-    private fun doSetup(){
-        val didSucceed = initPostHandler()
-        if(didSucceed){
-            setupViews()
-        }
+        val inputMethodManager = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+        inputField.requestFocus()
+        inputMethodManager.showSoftInput(inputField, InputMethodManager.SHOW_IMPLICIT)
     }
 
-    private fun initPostHandler(): Boolean{
-        val postHandlerEndpoint = NetworkHandler.getEndpoint()
-        if(postHandlerEndpoint == null) {
-            goToSettings()
-            return false
-        } else if(!URLUtil.isValidUrl(postHandlerEndpoint)){
-            Toast.makeText(this, "Invalid endpoint URL", Toast.LENGTH_LONG).show()
-            goToSettings()
-            return false
-        }
-
-        networkHandler = NetworkHandler()
-        return true
-    }
 
     private fun goToSettings(){
         settingsLauncher.launch(Intent(this, SettingsActivity::class.java))
@@ -66,7 +52,7 @@ class MainActivity : AppCompatActivity() {
     private fun setupViews(){
         //INPUT_FIELD
         focusOnInputField()
-        val inputFieldListener = InputFieldListener(networkHandler!!, taskHistory)
+        val inputFieldListener = InputFieldListener(networkHandler, taskHistory)
         inputField.setOnEditorActionListener(inputFieldListener)
 
         //POST_LIST

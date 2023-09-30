@@ -8,6 +8,17 @@ class Task(val text: String) {
     var status = INITIAL_STATUS
 
     override fun toString(): String {
+
         return text
+    }
+
+    fun toJSON(): String {
+        val json = StringBuilder()
+        json.append("{")
+
+        json.append("\"content\":\"${text}\"")
+
+        json.append("}")
+        return json.toString()
     }
 }
