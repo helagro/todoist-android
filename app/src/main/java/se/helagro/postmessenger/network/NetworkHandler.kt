@@ -80,7 +80,10 @@ class NetworkHandler() {
             errorBuilder.appendLine(e.stackTraceToString())
             errorBuilder.appendLine(conn?.responseCode)
             errorBuilder.appendLine(conn?.responseMessage)
-            errorBuilder.appendLine(readBody(conn))
+
+            try {
+                errorBuilder.appendLine(readBody(conn))
+            } catch(_: Exception){}
 
             Log.e("NetworkHandler", errorBuilder.toString())
             return -1

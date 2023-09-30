@@ -8,7 +8,7 @@ import se.helagro.postmessenger.network.NetworkHandlerListener
 import se.helagro.postmessenger.taskhistory.TaskHistory
 import se.helagro.postmessenger.taskitem.Task
 
-class InputFieldListener(val networkHandler: NetworkHandler, val taskHistory: TaskHistory) :
+class InputFieldListener(private val networkHandler: NetworkHandler, private val taskHistory: TaskHistory) :
     TextView.OnEditorActionListener, NetworkHandlerListener {
 
     override fun onEditorAction(textView: TextView?, actionId: Int, p2: KeyEvent?): Boolean {
