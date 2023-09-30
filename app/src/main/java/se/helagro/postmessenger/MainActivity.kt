@@ -12,17 +12,17 @@ import androidx.activity.result.contract.ActivityResultContracts.StartActivityFo
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
 import se.helagro.postmessenger.network.NetworkHandler
-import se.helagro.postmessenger.posthistory.PostHistory
+import se.helagro.postmessenger.taskhistory.TaskHistory
 import se.helagro.postmessenger.settings.SettingsActivity
 
 class MainActivity : AppCompatActivity() {
-    val postHistory = PostHistory()
+    val taskHistory = TaskHistory()
     private var networkHandler: NetworkHandler? = null
 
 
     //=========== ENTRY POINTS ===========
 
-    val settingsLauncher = registerForActivityResult(StartActivityForResult()) { _: ActivityResult ->
+    private val settingsLauncher = registerForActivityResult(StartActivityForResult()) { _: ActivityResult ->
         doSetup()
     }
 
@@ -52,7 +52,7 @@ class MainActivity : AppCompatActivity() {
             return false
         }
 
-        networkHandler = NetworkHandler(postHandlerEndpoint)
+        networkHandler = NetworkHandler()
         return true
     }
 
@@ -66,13 +66,13 @@ class MainActivity : AppCompatActivity() {
     private fun setupViews(){
         //INPUT_FIELD
         focusOnInputField()
-        val inputFieldListener = InputFieldListener(networkHandler!!, postHistory)
+        val inputFieldListener = InputFieldListener(networkHandler!!, taskHistory)
         inputField.setOnEditorActionListener(inputFieldListener)
 
         //POST_LIST
-        val postListAdapter = PostHistoryListAdapter(this, postHistory)
+        val postListAdapter = TaskHistoryListAdapter(this, taskHistory)
         postLogList.adapter = postListAdapter
-        postHistory.addListener(postListAdapter)
+        taskHistory.addListener(postListAdapter)
     }
 
     private fun focusOnInputField(){
@@ -98,6 +98,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        (postLogList.adapter as PostHistoryListAdapter?)?.let { postHistory.removeListener(it) }
+        (postLogList.adapter as TaskHistoryListAdapter?)?.let { taskHistory.removeListener(it) }
     }
 }

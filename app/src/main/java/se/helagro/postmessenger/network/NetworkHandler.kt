@@ -1,10 +1,7 @@
 package se.helagro.postmessenger.network
 
-import android.os.Handler
-import android.os.Looper
-import se.helagro.postmessenger.postitem.PostItem
-import se.helagro.postmessenger.postitem.PostItemStatus
-import se.helagro.postmessenger.settings.DefaultSettingsValues
+import se.helagro.postmessenger.taskitem.Task
+import se.helagro.postmessenger.taskitem.TaskStatus
 import se.helagro.postmessenger.settings.SettingsID
 import se.helagro.postmessenger.settings.StorageHandler
 import java.io.BufferedReader
@@ -16,33 +13,27 @@ import java.net.URLEncoder
 import kotlin.concurrent.thread
 
 
-class NetworkHandler(private val endpoint: String) {
+class NetworkHandler() {
 
     companion object{
+        private val ENDPOINT = "https://api.todoist.com/rest/v2/tasks"
         private val REQUEST_METHOD = "POST"
         private val CONNECT_TIMEOUT = 7000 // in milliseconds
 
         fun getEndpoint(): String?{
             val storageHandler = StorageHandler.getInstance()
-            return storageHandler.getString(SettingsID.ENDPOINT)
+            return storageHandler.getString(SettingsID.API_KEY)
         }
     }
 
-    private val client: HttpURLConnection
-    private val jsonKey: String
+    private val apiKey: String = StorageHandler.getInstance().getString(SettingsID.API_KEY)!!
 
-    init {
-        val url = URL(endpoint)
-        client = url.openConnection() as HttpURLConnection
-        jsonKey = StorageHandler.getInstance().getString(SettingsID.JSON_KEY) ?: DefaultSettingsValues.JSON_KEY.value
-    }
-
-    fun sendMessage(postItem: PostItem, listener: NetworkHandlerListener) {
+    fun sendMessage(task: Task, listener: NetworkHandlerListener) {
         thread{
-            val responseCode = makeRequest(postItem.msg)
+            val responseCode = makeRequest(task.text)
 
-            if(responseCode == 200) postItem.status = PostItemStatus.SUCCESS
-            else postItem.status = PostItemStatus.FAILURE
+            if(responseCode == 200) task.status = TaskStatus.SUCCESS
+            else task.status = TaskStatus.FAILURE
 
             listener.onPostItemUpdate(responseCode)
         }
@@ -54,7 +45,7 @@ class NetworkHandler(private val endpoint: String) {
         val data = getRequestData(msg)
 
         try {
-            connection = URL(this.endpoint).openConnection() as HttpURLConnection
+            connection = URL(ENDPOINT).openConnection() as HttpURLConnection
             connection.connectTimeout = CONNECT_TIMEOUT
             connection.requestMethod = REQUEST_METHOD
             connection.setRequestProperty("Content-Type", "text/plain")
@@ -79,8 +70,8 @@ class NetworkHandler(private val endpoint: String) {
     }
 
     private fun getRequestData(msg: String): String{
-        if(jsonKey.isEmpty()) return msg
-        return "&$jsonKey=${URLEncoder.encode(msg, "UTF-8")}"
+        if(apiKey.isEmpty()) return msg
+        return "&$apiKey=${URLEncoder.encode(msg, "UTF-8")}"
     }
 
 }

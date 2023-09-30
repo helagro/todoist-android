@@ -29,8 +29,7 @@ class SettingsActivity: AppCompatActivity() {
     }
 
     private fun fillInputFields(){
-        endpointInput.setText(storageHandler.getString(SettingsID.ENDPOINT)?: "")
-        jsonKeyInput.setText(storageHandler.getString(SettingsID.JSON_KEY)?: DefaultSettingsValues.JSON_KEY.value)
+        apiKeyInput.setText(storageHandler.getString(SettingsID.API_KEY)?: "")
     }
 
     //return-button in actionBar onClick
@@ -40,7 +39,6 @@ class SettingsActivity: AppCompatActivity() {
     }
 
     private fun saveSettings(){
-        storageHandler.setString(SettingsID.ENDPOINT, endpointInput.text.toString())
-        storageHandler.setString(SettingsID.JSON_KEY, jsonKeyInput.text.toString())
+        storageHandler.setString(SettingsID.API_KEY, apiKeyInput.text.toString())
     }
 }

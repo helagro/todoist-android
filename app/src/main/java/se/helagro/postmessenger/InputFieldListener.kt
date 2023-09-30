@@ -5,10 +5,10 @@ import android.view.inputmethod.EditorInfo
 import android.widget.TextView
 import se.helagro.postmessenger.network.NetworkHandler
 import se.helagro.postmessenger.network.NetworkHandlerListener
-import se.helagro.postmessenger.posthistory.PostHistory
-import se.helagro.postmessenger.postitem.PostItem
+import se.helagro.postmessenger.taskhistory.TaskHistory
+import se.helagro.postmessenger.taskitem.Task
 
-class InputFieldListener(val networkHandler: NetworkHandler, val postHistory: PostHistory) :
+class InputFieldListener(val networkHandler: NetworkHandler, val taskHistory: TaskHistory) :
     TextView.OnEditorActionListener, NetworkHandlerListener {
 
     override fun onEditorAction(textView: TextView?, actionId: Int, p2: KeyEvent?): Boolean {
@@ -16,10 +16,10 @@ class InputFieldListener(val networkHandler: NetworkHandler, val postHistory: Po
         if (textView == null) return false
 
         val textInput = textView.text.toString()
-        val newPostItem = PostItem(textInput)
-        postHistory.add(newPostItem)
+        val newTask = Task(textInput)
+        taskHistory.add(newTask)
 
-        networkHandler.sendMessage(newPostItem, this)
+        networkHandler.sendMessage(newTask, this)
         textView.text = ""
         return true
     }
@@ -29,6 +29,6 @@ class InputFieldListener(val networkHandler: NetworkHandler, val postHistory: Po
     }
 
     override fun onPostItemUpdate(code: Int) {
-        postHistory.alertListeners()
+        taskHistory.alertListeners()
     }
 }

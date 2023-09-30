@@ -1,9 +1,7 @@
 package se.helagro.postmessenger
 
 import android.app.Activity
-import android.content.Context
 import android.graphics.Color
-import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,42 +11,42 @@ import android.widget.TextView
 import com.google.android.material.R.drawable.ic_mtrl_checked_circle
 import se.helagro.postmessenger.network.NetworkHandler
 import se.helagro.postmessenger.network.NetworkHandlerListener
-import se.helagro.postmessenger.posthistory.PostHistory
-import se.helagro.postmessenger.posthistory.PostHistoryListener
-import se.helagro.postmessenger.postitem.PostItem
-import se.helagro.postmessenger.postitem.PostItemStatus
+import se.helagro.postmessenger.taskhistory.TaskHistory
+import se.helagro.postmessenger.taskhistory.TaskHistoryListener
+import se.helagro.postmessenger.taskitem.Task
+import se.helagro.postmessenger.taskitem.TaskStatus
 
 
-class PostHistoryListAdapter(val activity: Activity, private val postHistory: PostHistory) :
-    ArrayAdapter<PostItem>(activity, -1, postHistory), PostHistoryListener, NetworkHandlerListener {
+class TaskHistoryListAdapter(val activity: Activity, private val taskHistory: TaskHistory) :
+    ArrayAdapter<Task>(activity, -1, taskHistory), TaskHistoryListener, NetworkHandlerListener {
 
     val inflater: LayoutInflater = LayoutInflater.from(context)
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-        val postItem = postHistory[position]
+        val postItem = taskHistory[position]
         val listItem = inflater.inflate(R.layout.listitem_post, null)
         val textView: TextView = listItem.findViewById(R.id.postLogListText)
-        textView.text = postItem.msg
+        textView.text = postItem.text
 
 
         //=========== STATUS BUTTON ===========
 
         val statusBtn: ImageButton = listItem.findViewById(R.id.postLogListImgBtn)
         statusBtn.setOnClickListener{
-            val networkHandler  = NetworkHandler(NetworkHandler.getEndpoint()!!)
+            val networkHandler  = NetworkHandler()
             networkHandler .sendMessage(postItem, this)
         }
         when(postItem.status){
-            PostItemStatus.SUCCESS -> {
+            TaskStatus.SUCCESS -> {
                 statusBtn.setImageResource(ic_mtrl_checked_circle)
                 statusBtn.clearColorFilter()
                 statusBtn.isEnabled = false
             }
-            PostItemStatus.LOADING -> {
+            TaskStatus.LOADING -> {
                 statusBtn.setImageResource(android.R.color.transparent)
                 statusBtn.isEnabled = false
             }
-            PostItemStatus.FAILURE -> {
+            TaskStatus.FAILURE -> {
                 statusBtn.setImageResource(android.R.drawable.stat_notify_sync_noanim)
                 statusBtn.setColorFilter(Color.argb(255, 255, 0, 0))
                 statusBtn.isEnabled = true
@@ -65,6 +63,6 @@ class PostHistoryListAdapter(val activity: Activity, private val postHistory: Po
     }
 
     override fun onPostItemUpdate(code: Int) {
-        postHistory.alertListeners()
+        taskHistory.alertListeners()
     }
 }
