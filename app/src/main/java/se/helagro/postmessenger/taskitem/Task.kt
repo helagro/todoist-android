@@ -38,6 +38,7 @@ class Task(val text: String) {
         .replace(PRIORITY_REGEX, "")
         .replace(TOD_REGEX, "")
         .replace(TOM_REGEX, "")
+        .replace("\"", "\\\"")
         .trim()
 
 

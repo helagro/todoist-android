@@ -34,7 +34,7 @@ class TaskHistoryListAdapter(val activity: Activity, private val taskHistory: Ta
         val statusBtn: ImageButton = listItem.findViewById(R.id.postLogListImgBtn)
         statusBtn.setOnClickListener{
             val networkHandler  = NetworkHandler()
-            networkHandler .postTask(postItem, this)
+            networkHandler.postTask(postItem, this)
         }
         when(postItem.status){
             TaskStatus.SUCCESS -> {
