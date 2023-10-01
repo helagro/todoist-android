@@ -5,11 +5,11 @@ import com.google.gson.Gson
 import se.helagro.postmessenger.network.NetworkCallback
 import se.helagro.postmessenger.network.NetworkHandler
 
-class Destinations(networkHandler: NetworkHandler) {
-    val destinations = ArrayList<Destination>()
+object Destinations {
+    private val destinations = ArrayList<Destination>()
 
 
-    init {
+    fun load (networkHandler: NetworkHandler) {
         networkHandler.getProjects(object : NetworkCallback {
             override fun onUpdate(code: Int, body: String?) {
                 if(code == 200 && body != null) parseProjects(body)
@@ -48,4 +48,9 @@ class Destinations(networkHandler: NetworkHandler) {
         destinations.forEach{Log.d("TAG", it.toString())}
     }
 
+
+    // DESTINATIONS MIGHT NOT HAVE BEEN LOADED!
+    fun get(name: String): Destination?{
+        return destinations.find { it.name == name }
+    }
 }

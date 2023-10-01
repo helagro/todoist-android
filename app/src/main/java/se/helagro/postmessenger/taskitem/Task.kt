@@ -53,9 +53,16 @@ class Task(val text: String) {
         json.append("{")
 
         json.append("\"content\":\"${content}\"")
-        // project?.let { json.append(",\"content\":\"$project\"") }
         priority?.let { json.append(",\"priority\":\"$priority\"") }
         dateStr?.let { json.append(",\"due_string\":\"$dateStr\"") }
+        project?.let {
+            Destinations.get(project)?.let {
+                json.append(",\"project_id\":\"${it.projectID}\"")
+                it.sectionID?.let {
+                    json.append(",\"section_id\":\"${it}\"")
+                }
+            }
+        }
 
         json.append("}")
 

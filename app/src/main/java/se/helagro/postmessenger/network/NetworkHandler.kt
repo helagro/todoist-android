@@ -75,7 +75,7 @@ class NetworkHandler() {
             conn.connectTimeout = CONNECT_TIMEOUT
             conn.requestMethod = method
             conn.setRequestProperty("Authorization", "Bearer $apiKey")
-            //conn.setRequestProperty("X-Request-Id", java.util.UUID.randomUUID().toString())
+            conn.setRequestProperty("X-Request-Id", java.util.UUID.randomUUID().toString())
             if(method == "POST") conn.doOutput = true
 
             reqBody?.let {

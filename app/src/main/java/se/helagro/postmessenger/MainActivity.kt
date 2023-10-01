@@ -33,7 +33,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(view)
 
 
-        Destinations(networkHandler)
+        Destinations.load(networkHandler)
         setupViews()
     }
 
