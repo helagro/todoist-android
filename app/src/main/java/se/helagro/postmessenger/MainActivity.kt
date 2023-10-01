@@ -35,7 +35,6 @@ class MainActivity : AppCompatActivity() {
 
         window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE)
 
-
         Destinations.load(networkHandler)
         setupViews()
     }
@@ -61,6 +60,7 @@ class MainActivity : AppCompatActivity() {
         focusOnInputField()
         val inputFieldListener = InputFieldListener(networkHandler, taskHistory)
         binding.inputField.setOnEditorActionListener(inputFieldListener)
+        binding.inputField.addTextChangedListener(HideCursor(binding.inputField))
 
         //POST_LIST
         val postListAdapter = TaskHistoryListAdapter(this, taskHistory)

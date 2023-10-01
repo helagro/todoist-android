@@ -23,6 +23,7 @@
         android:maxLines="1"
         android:inputType="text"
         android:id="@+id/inputField"
+        android:textCursorDrawable="@drawable/cursor"
         android:cursorVisible="false"
         >
         <requestFocus/>
