@@ -1,5 +1,6 @@
 package se.helagro.postmessenger.settings
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 
@@ -26,6 +27,7 @@ class StorageHandler private constructor(context: Context) {
         return sharedPreferences.getString(id.value, null)
     }
 
+    @SuppressLint("ApplySharedPref")
     fun setString(id: SettingsID, value: String){
         val editor = sharedPreferences.edit()
         editor.putString(id.value, value)

@@ -35,6 +35,7 @@
                 android:id="@+id/apiKeyInput"
                 android:layout_marginStart="10dp"
                 android:layout_marginEnd="20dp"
+                android:imeOptions="actionDone"
                 />
         </LinearLayout>
 

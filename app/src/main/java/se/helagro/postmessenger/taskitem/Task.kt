@@ -5,7 +5,7 @@ import android.util.Log
 class Task(val text: String) {
     companion object{
         val INITIAL_STATUS = TaskStatus.LOADING
-        val PROJECT_REGEX = Regex("#(\\w+)")
+        val PROJECT_REGEX = Regex(":(\\w+)")
         val PRIORITY_REGEX = Regex("p([1-4])( |\$)")
         val TOD_REGEX = Regex(" tod( |\$)")
         val TOM_REGEX = Regex(" tom( |\$)")
@@ -59,7 +59,7 @@ class Task(val text: String) {
             Destinations.get(project)?.let {
                 json.append(",\"project_id\":\"${it.projectID}\"")
                 it.sectionID?.let {
-                    json.append(",\"section_id\":\"${it}\"")
+                    json.append(",\"section_id\":\"$it\"")
                 }
             }
         }
