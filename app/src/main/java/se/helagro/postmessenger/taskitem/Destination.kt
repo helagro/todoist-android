@@ -1,3 +1,9 @@
 package se.helagro.postmessenger.taskitem
 
-data class Destination(val sectionID: Int?, val projectID: Int?)
+import com.google.gson.annotations.SerializedName
+
+data class Destination(
+    val sectionID: String?,
+    @SerializedName("id") val projectID: String,
+    val name: String
+)

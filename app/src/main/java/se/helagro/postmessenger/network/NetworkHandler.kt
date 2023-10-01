@@ -87,7 +87,6 @@ class NetworkHandler() {
             }
 
             val resBody = readBody(conn)
-            Log.v(TAG, resBody)
             return Pair(conn.responseCode, resBody)
 
         } catch (e: Exception) {
