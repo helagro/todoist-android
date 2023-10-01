@@ -2,23 +2,22 @@ package se.helagro.postmessenger
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.inputmethod.InputMethodManager
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.appcompat.app.AppCompatActivity
-import kotlinx.android.synthetic.main.activity_main.inputField
-import kotlinx.android.synthetic.main.activity_main.postLogList
+import se.helagro.postmessenger.databinding.ActivityMainBinding
 import se.helagro.postmessenger.network.NetworkHandler
-import se.helagro.postmessenger.network.NetworkHandlerListener
 import se.helagro.postmessenger.settings.SettingsActivity
 import se.helagro.postmessenger.taskhistory.TaskHistory
+import se.helagro.postmessenger.taskitem.Destinations
 
 class MainActivity : AppCompatActivity() {
     private val taskHistory = TaskHistory()
     private var networkHandler: NetworkHandler = NetworkHandler()
+    private lateinit var binding: ActivityMainBinding
 
 
     //=========== ENTRY POINTS ===========
@@ -29,15 +28,12 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        val view = binding.root
+        setContentView(view)
 
-        /*
-        networkHandler.getProjects(object : NetworkHandlerListener {
-            override fun onUpdate(code: Int) {
 
-            }
-        }) */
-
+        Destinations(networkHandler)
         setupViews()
     }
 
@@ -45,8 +41,8 @@ class MainActivity : AppCompatActivity() {
         super.onResume()
 
         val inputMethodManager = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
-        inputField.requestFocus()
-        inputMethodManager.showSoftInput(inputField, InputMethodManager.SHOW_IMPLICIT)
+        binding.inputField.requestFocus()
+        inputMethodManager.showSoftInput(binding.inputField, InputMethodManager.SHOW_IMPLICIT)
     }
 
 
@@ -61,18 +57,18 @@ class MainActivity : AppCompatActivity() {
         //INPUT_FIELD
         focusOnInputField()
         val inputFieldListener = InputFieldListener(networkHandler, taskHistory)
-        inputField.setOnEditorActionListener(inputFieldListener)
+        binding.inputField.setOnEditorActionListener(inputFieldListener)
 
         //POST_LIST
         val postListAdapter = TaskHistoryListAdapter(this, taskHistory)
-        postLogList.adapter = postListAdapter
+        binding.postLogList.adapter = postListAdapter
         taskHistory.addListener(postListAdapter)
     }
 
     private fun focusOnInputField(){
         val imm: InputMethodManager =
             getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-        imm.showSoftInput(inputField, InputMethodManager.SHOW_IMPLICIT)
+        imm.showSoftInput(binding.inputField, InputMethodManager.SHOW_IMPLICIT)
     }
 
 
@@ -92,6 +88,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        (postLogList.adapter as TaskHistoryListAdapter?)?.let { taskHistory.removeListener(it) }
+        (binding.postLogList.adapter as TaskHistoryListAdapter?)?.let { taskHistory.removeListener(it) }
     }
 }

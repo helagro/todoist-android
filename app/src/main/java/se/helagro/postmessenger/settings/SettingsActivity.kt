@@ -5,31 +5,33 @@ import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
-import kotlinx.android.synthetic.main.settings.*
-import se.helagro.postmessenger.R
+import se.helagro.postmessenger.databinding.SettingsBinding
 
 
 class SettingsActivity: AppCompatActivity() {
 
+    private lateinit var binding: SettingsBinding
     private val storageHandler = StorageHandler.getInstance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.settings)
+        binding = SettingsBinding.inflate(layoutInflater)
+        val view = binding.root
+        setContentView(view)
 
         val actionBar: ActionBar = supportActionBar!!
         actionBar.setDisplayHomeAsUpEnabled(true)
 
         fillInputFields()
 
-        doneBtn.setOnClickListener {
+        binding.doneBtn.setOnClickListener {
             saveSettings()
             Toast.makeText(this, "Saved", Toast.LENGTH_LONG).show()
         }
     }
 
     private fun fillInputFields(){
-        apiKeyInput.setText(storageHandler.getString(SettingsID.API_KEY)?: "")
+        binding.apiKeyInput.setText(storageHandler.getString(SettingsID.API_KEY)?: "")
     }
 
     //return-button in actionBar onClick
@@ -39,6 +41,6 @@ class SettingsActivity: AppCompatActivity() {
     }
 
     private fun saveSettings(){
-        storageHandler.setString(SettingsID.API_KEY, apiKeyInput.text.toString())
+        storageHandler.setString(SettingsID.API_KEY, binding.apiKeyInput.text.toString())
     }
 }

@@ -10,7 +10,7 @@ import android.widget.ImageButton
 import android.widget.TextView
 import com.google.android.material.R.drawable.ic_mtrl_checked_circle
 import se.helagro.postmessenger.network.NetworkHandler
-import se.helagro.postmessenger.network.NetworkHandlerListener
+import se.helagro.postmessenger.network.NetworkCallback
 import se.helagro.postmessenger.taskhistory.TaskHistory
 import se.helagro.postmessenger.taskhistory.TaskHistoryListener
 import se.helagro.postmessenger.taskitem.Task
@@ -18,7 +18,7 @@ import se.helagro.postmessenger.taskitem.TaskStatus
 
 
 class TaskHistoryListAdapter(val activity: Activity, private val taskHistory: TaskHistory) :
-    ArrayAdapter<Task>(activity, -1, taskHistory), TaskHistoryListener, NetworkHandlerListener {
+    ArrayAdapter<Task>(activity, -1, taskHistory), TaskHistoryListener, NetworkCallback {
 
     val inflater: LayoutInflater = LayoutInflater.from(context)
 
@@ -62,7 +62,7 @@ class TaskHistoryListAdapter(val activity: Activity, private val taskHistory: Ta
         }
     }
 
-    override fun onUpdate(code: Int) {
+    override fun onUpdate(code: Int, body: String?) {
         taskHistory.alertListeners()
     }
 }

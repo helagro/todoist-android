@@ -23,32 +23,51 @@ class NetworkHandler() {
 
     private val apiKey: String = StorageHandler.getInstance().getString(SettingsID.API_KEY) ?: ""
 
-    fun postTask(task: Task, listener: NetworkHandlerListener) {
+
+
+    fun postTask(task: Task, callback: NetworkCallback) {
         thread {
-            val responseCode = makeRequest(
+            val response = makeRequest(
                 task.toJSON(),
                 "https://api.todoist.com/rest/v2/tasks",
                 "POST"
             )
 
-            if(responseCode == 200) task.status = TaskStatus.SUCCESS
+            if(response.first == 200) task.status = TaskStatus.SUCCESS
             else task.status = TaskStatus.FAILURE
 
-            listener.onUpdate(responseCode)
+            callback.onUpdate(response.first, response.second)
         }
     }
 
-    fun getProjects(listener: NetworkHandlerListener){
+
+    fun getProjects(callback: NetworkCallback){
         thread {
-            val responseCode = makeRequest(
+            val response = makeRequest(
                 null,
                 "https://api.todoist.com/rest/v2/projects",
                 "GET"
             )
+
+            callback.onUpdate(response.first, response.second)
         }
     }
 
-    private fun makeRequest(reqBody: String?, endpoint: String, method: String): Int {
+
+    fun getSections(callback: NetworkCallback){
+        thread {
+            val response = makeRequest(
+                null,
+                "https://api.todoist.com/rest/v2/sections",
+                "GET"
+            )
+
+            callback.onUpdate(response.first, response.second)
+        }
+    }
+
+
+    private fun makeRequest(reqBody: String?, endpoint: String, method: String): Pair<Int, String?> {
         var conn: HttpURLConnection? = null
 
         try {
@@ -56,7 +75,7 @@ class NetworkHandler() {
             conn.connectTimeout = CONNECT_TIMEOUT
             conn.requestMethod = method
             conn.setRequestProperty("Authorization", "Bearer $apiKey")
-            conn.setRequestProperty("X-Request-Id", java.util.UUID.randomUUID().toString())
+            //conn.setRequestProperty("X-Request-Id", java.util.UUID.randomUUID().toString())
             if(method == "POST") conn.doOutput = true
 
             reqBody?.let {
@@ -68,34 +87,41 @@ class NetworkHandler() {
             }
 
             val resBody = readBody(conn)
-
             Log.v(TAG, resBody)
+            return Pair(conn.responseCode, resBody)
 
-            return conn.responseCode
         } catch (e: Exception) {
-            val errorBuilder = StringBuilder()
-            errorBuilder.appendLine(conn?.requestMethod)
-            errorBuilder.appendLine(reqBody)
-
-            errorBuilder.appendLine(e.stackTraceToString())
-            errorBuilder.appendLine(conn?.responseCode)
-            errorBuilder.appendLine(conn?.responseMessage)
-
-            try {
-                errorBuilder.appendLine(readBody(conn))
-            } catch(_: Exception){}
-
-            Log.e("NetworkHandler", errorBuilder.toString())
-            return -1
+            val details = errorDetails(conn, reqBody, e)
+            Log.e(TAG, details)
+            return Pair(-1, null)
         } finally {
             try {
                 conn?.disconnect()
             } catch (e: Exception) {
-                return -1
+                return Pair(-1, null)
             }
         }
     }
 
+
+    private fun errorDetails(conn: HttpURLConnection?, reqBody: String?, error: java.lang.Exception): String{
+        val builder = StringBuilder()
+        builder.appendLine(conn?.requestMethod)
+        builder.appendLine(reqBody)
+
+        builder.appendLine(error.stackTraceToString())
+        builder.appendLine(conn?.responseCode)
+        builder.appendLine(conn?.responseMessage)
+
+        try {
+            builder.appendLine(readBody(conn))
+        } catch(_: Exception){}
+
+        return builder.toString()
+    }
+
+
+    @Throws
     private fun readBody(conn: HttpURLConnection?): String{
 
         // return if null

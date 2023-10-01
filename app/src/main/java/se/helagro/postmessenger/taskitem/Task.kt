@@ -1,7 +1,6 @@
 package se.helagro.postmessenger.taskitem
 
 import android.util.Log
-import java.util.TimeZone
 
 class Task(val text: String) {
     companion object{
@@ -54,7 +53,7 @@ class Task(val text: String) {
         json.append("{")
 
         json.append("\"content\":\"${content}\"")
-        project?.let { json.append(",\"content\":\"$project\"") }
+        // project?.let { json.append(",\"content\":\"$project\"") }
         priority?.let { json.append(",\"priority\":\"$priority\"") }
         dateStr?.let { json.append(",\"due_string\":\"$dateStr\"") }
 
