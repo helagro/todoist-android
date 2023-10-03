@@ -8,13 +8,14 @@
     android:orientation="vertical"
     >
 
+    <!--    android:stackFromBottom="true"-->
     <ListView
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
         android:id="@+id/postLogList"
         android:transcriptMode="normal"
-        android:stackFromBottom="true"/>
+    />
 
     <EditText
         android:layout_width="match_parent"
