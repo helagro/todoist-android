@@ -7,6 +7,7 @@ class Task(val text: String) {
         val INITIAL_STATUS = TaskStatus.LOADING
         val PROJECT_REGEX = Regex(":(\\w+)")
         val PRIORITY_REGEX = Regex("p([1-4])( |\$)")
+        val LABEL_REGEX = Regex("\\?(\\w+)")
         val TOD_REGEX = Regex(" tod( |\$)")
         val TOM_REGEX = Regex(" tom( |\$)")
     }
@@ -20,6 +21,8 @@ class Task(val text: String) {
 
     private val priority: Int? = PRIORITY_REGEX.find(text)?.groupValues?.get(1)
         ?.let { 5 - Integer.parseInt(it) }
+
+    private val label: String? = LABEL_REGEX.find(text)?.groupValues?.get(1)
 
     private val dateStr: String? = when {
         text.contains(TOD_REGEX) -> {
@@ -36,6 +39,7 @@ class Task(val text: String) {
     private val content: String = text
         .replace(PROJECT_REGEX, "")
         .replace(PRIORITY_REGEX, "")
+        .replace(LABEL_REGEX, "")
         .replace(TOD_REGEX, "")
         .replace(TOM_REGEX, "")
         .replace("\"", "\\\"")
@@ -55,6 +59,7 @@ class Task(val text: String) {
 
         json.append("\"content\":\"${content}\"")
         priority?.let { json.append(",\"priority\":\"$priority\"") }
+        label?.let { json.append(",\"labels\":[\"$label\"]") }
         dateStr?.let { json.append(",\"due_string\":\"$dateStr\"") }
         project?.let {
             Destinations.get(project)?.let {
