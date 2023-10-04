@@ -5,9 +5,9 @@ import android.util.Log
 class Task(val text: String) {
     companion object{
         val INITIAL_STATUS = TaskStatus.LOADING
-        val PROJECT_REGEX = Regex("( |^):(\\w+)")
+        val PROJECT_REGEX = Regex("( |^):(\\S+)")
         val PRIORITY_REGEX = Regex("( |^)p([1-4])( |\$)")
-        val LABEL_REGEX = Regex("( |^)\\?(\\w+)")
+        val LABEL_REGEX = Regex("( |^)\\?(\\S+)")
         val TOD_REGEX = Regex(" tod( |\$)")
         val TOM_REGEX = Regex(" tom( |\$)")
     }

@@ -26,6 +26,8 @@
         android:id="@+id/inputField"
         android:textCursorDrawable="@drawable/cursor"
         android:cursorVisible="false"
+        android:textSize="24sp"
+        android:layout_marginHorizontal="15dp"
         >
         <requestFocus/>
     </EditText>
