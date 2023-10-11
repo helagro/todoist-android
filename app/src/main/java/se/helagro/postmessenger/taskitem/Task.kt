@@ -11,6 +11,8 @@ class Task(val text: String) {
         val TOD_REGEX = Regex(" tod( |\$)")
         val TOM_REGEX = Regex(" tom( |\$)")
         val TIME_REGEX = Regex("( |^)([0-2]?[1-9]:[0-5][0-9])( |\$)")
+        val IN_MIN_REGEX = Regex("( |^)(in \\d+ min)( |\$)")
+        val IN_HOUR_REGEX = Regex("( |^)(in \\d+ hour)( |\$)")
     }
 
     var status = INITIAL_STATUS
@@ -36,6 +38,12 @@ class Task(val text: String) {
         text.contains(TIME_REGEX) -> {
             TIME_REGEX.find(text)?.groupValues?.get(2)
         }
+        text.contains(IN_MIN_REGEX) -> {
+            IN_MIN_REGEX.find(text)?.groupValues?.get(2)
+        }
+        text.contains(IN_HOUR_REGEX) -> {
+            IN_HOUR_REGEX.find(text)?.groupValues?.get(2)
+        }
         else -> {
             null
         }
@@ -48,6 +56,8 @@ class Task(val text: String) {
         .replace(TOD_REGEX, "")
         .replace(TOM_REGEX, "")
         .replace(TIME_REGEX, "")
+        .replace(IN_MIN_REGEX, "")
+        .replace(IN_HOUR_REGEX, "")
         .replace("\"", "\\\"")
         .trim()
 
