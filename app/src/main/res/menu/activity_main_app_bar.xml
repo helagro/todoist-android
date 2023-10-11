@@ -7,5 +7,14 @@
         android:id="@+id/action_settings"
         android:icon="@android:drawable/ic_menu_preferences"
         android:title="Settings"
+        android:iconTint="#fff"
         app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/action_clear"
+        android:icon="@android:drawable/ic_menu_delete"
+        android:title="clear"
+        app:showAsAction="ifRoom"
+        android:iconTint="#fff"
+        />
 </menu>

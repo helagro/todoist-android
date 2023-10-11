@@ -20,6 +20,11 @@ class TaskHistory() : ArrayList<Task>() {
         return result
     }
 
+    override fun clear() {
+        super.clear()
+        alertListeners()
+    }
+
     fun alertListeners(){
         for(listener in listeners){
             listener.onPostHistoryUpdate()

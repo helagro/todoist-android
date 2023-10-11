@@ -97,7 +97,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        goToSettings()
+        if (item.itemId == R.id.action_settings) goToSettings()
+        else if (item.itemId == R.id.action_clear) taskHistory.clear()
         return true
     }
 
