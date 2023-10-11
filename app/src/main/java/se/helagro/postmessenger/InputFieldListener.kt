@@ -8,10 +8,14 @@ import se.helagro.postmessenger.network.NetworkCallback
 import se.helagro.postmessenger.taskhistory.TaskHistory
 import se.helagro.postmessenger.taskitem.Task
 
-class InputFieldListener(private val networkHandler: NetworkHandler, private val taskHistory: TaskHistory) :
-    TextView.OnEditorActionListener, NetworkCallback {
+class InputFieldListener(
+    private val networkHandler: NetworkHandler,
+    private val taskHistory: TaskHistory
+) : TextView.OnEditorActionListener, NetworkCallback {
 
-    override fun onEditorAction(textView: TextView?, actionId: Int, p2: KeyEvent?): Boolean {
+    val TAG = InputFieldListener::class.java.name
+
+    override fun onEditorAction(textView: TextView?, actionId: Int, p: KeyEvent?): Boolean {
         if (!isUserDone(actionId)) return false
         if (textView == null) return false
 
@@ -25,7 +29,8 @@ class InputFieldListener(private val networkHandler: NetworkHandler, private val
     }
 
     private fun isUserDone(actionId: Int): Boolean {
-        return actionId == EditorInfo.IME_ACTION_DONE || actionId == EditorInfo.IME_NULL
+        return (actionId == EditorInfo.IME_ACTION_DONE) ||
+                (actionId == EditorInfo.IME_NULL)
     }
 
     override fun onUpdate(code: Int, body: String?) {

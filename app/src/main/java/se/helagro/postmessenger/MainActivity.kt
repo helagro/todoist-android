@@ -10,10 +10,12 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.appcompat.app.AppCompatActivity
 import se.helagro.postmessenger.databinding.ActivityMainBinding
+import se.helagro.postmessenger.network.NetworkCallback
 import se.helagro.postmessenger.network.NetworkHandler
 import se.helagro.postmessenger.settings.SettingsActivity
 import se.helagro.postmessenger.taskhistory.TaskHistory
 import se.helagro.postmessenger.taskitem.Destinations
+import se.helagro.postmessenger.taskitem.Task
 
 class MainActivity : AppCompatActivity() {
     private val taskHistory = TaskHistory()
@@ -61,6 +63,18 @@ class MainActivity : AppCompatActivity() {
         val inputFieldListener = InputFieldListener(networkHandler, taskHistory)
         binding.inputField.setOnEditorActionListener(inputFieldListener)
         binding.inputField.addTextChangedListener(HideCursor(binding.inputField))
+        binding.sendBtn.setOnClickListener {
+            val textInput = binding.inputField.text.toString()
+            val newTask = Task(textInput)
+            taskHistory.add(newTask)
+
+            networkHandler.postTask(newTask, object : NetworkCallback {
+                override fun onUpdate(code: Int, body: String?) {
+                    taskHistory.alertListeners()
+                }
+            })
+            binding.inputField.setText("")
+        }
 
         //POST_LIST
         val postListAdapter = TaskHistoryListAdapter(this, taskHistory)
