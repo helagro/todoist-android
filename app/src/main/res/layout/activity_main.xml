@@ -35,7 +35,8 @@
             android:inputType="textMultiLine"
             android:textCursorDrawable="@drawable/cursor"
             android:textSize="24sp"
-            android:hint="Text input">
+            android:contentDescription="Main input field"
+            >
 
             <requestFocus />
         </EditText>

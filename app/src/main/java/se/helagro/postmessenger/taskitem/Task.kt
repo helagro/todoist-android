@@ -10,6 +10,7 @@ class Task(val text: String) {
         val LABEL_REGEX = Regex("( |^)\\?(\\S+)")
         val TOD_REGEX = Regex(" tod( |\$)")
         val TOM_REGEX = Regex(" tom( |\$)")
+        val TIME_REGEX = Regex("( |^)([0-2]?[1-9]:[0-5][0-9])( |\$)")
     }
 
     var status = INITIAL_STATUS
@@ -32,6 +33,9 @@ class Task(val text: String) {
         text.contains(TOM_REGEX) -> {
             "tom"
         }
+        text.contains(TIME_REGEX) -> {
+            TIME_REGEX.find(text)?.groupValues?.get(2)
+        }
         else -> {
             null
         }
@@ -43,6 +47,7 @@ class Task(val text: String) {
         .replace(LABEL_REGEX, "")
         .replace(TOD_REGEX, "")
         .replace(TOM_REGEX, "")
+        .replace(TIME_REGEX, "")
         .replace("\"", "\\\"")
         .trim()
 
