@@ -1,60 +1,68 @@
 package se.helagro.postmessenger
 
 import android.app.Activity
-import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
 import android.widget.ImageButton
 import android.widget.TextView
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.R.drawable.ic_mtrl_checked_circle
-import se.helagro.postmessenger.network.NetworkHandler
 import se.helagro.postmessenger.network.NetworkCallback
+import se.helagro.postmessenger.network.NetworkHandler
 import se.helagro.postmessenger.taskhistory.TaskHistory
 import se.helagro.postmessenger.taskhistory.TaskHistoryListener
-import se.helagro.postmessenger.taskitem.Task
 import se.helagro.postmessenger.taskitem.TaskStatus
 
 
-class TaskHistoryListAdapter(val activity: Activity, private val taskHistory: TaskHistory) :
-    ArrayAdapter<Task>(activity, -1, taskHistory), TaskHistoryListener, NetworkCallback {
-
-    val inflater: LayoutInflater = LayoutInflater.from(context)
-
-    override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-        val postItem = taskHistory[position]
-        val listItem = inflater.inflate(R.layout.listitem_post, null)
-        val textView: TextView = listItem.findViewById(R.id.postLogListText)
-        textView.text = postItem.text
+class TaskHistoryListAdapter(private val activity: Activity, private val taskHistory: TaskHistory) :
+    RecyclerView.Adapter<TaskHistoryListAdapter.ViewHolder>(), TaskHistoryListener {
 
 
-        //=========== STATUS BUTTON ===========
+    // --------------------- RECYCLER VIEW ADAPTER METHODS ---------------------
 
-        val statusBtn: ImageButton = listItem.findViewById(R.id.postLogListImgBtn)
-        statusBtn.setOnClickListener{
-            val networkHandler  = NetworkHandler()
-            networkHandler.postTask(postItem, this)
-        }
-        when(postItem.status){
-            TaskStatus.SUCCESS -> {
-                statusBtn.setImageResource(ic_mtrl_checked_circle)
-                statusBtn.clearColorFilter()
-                statusBtn.isEnabled = false
-            }
-            TaskStatus.LOADING -> {
-                statusBtn.setImageResource(android.R.color.transparent)
-                statusBtn.isEnabled = false
-            }
-            TaskStatus.FAILURE -> {
-                statusBtn.setImageResource(android.R.drawable.stat_notify_sync_noanim)
-                statusBtn.setColorFilter(Color.argb(255, 255, 0, 0))
-                statusBtn.isEnabled = true
-            }
-        }
+    private val inflater: LayoutInflater = LayoutInflater.from(activity)
 
-        return listItem
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        val view = inflater.inflate(R.layout.listitem_post, parent, false)
+        return ViewHolder(view)
     }
+
+    override fun getItemCount(): Int {
+        return taskHistory.size
+    }
+
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        val postItem = taskHistory[position]
+        holder.textView.text = postItem.text
+        holder.statusBtn.setOnClickListener {
+            val networkHandler = NetworkHandler()
+            networkHandler.postTask(postItem, object : NetworkCallback {
+                override fun onUpdate(code: Int, body: String?) {
+                    taskHistory.alertListeners()
+                }
+            })
+        }
+        when (postItem.status) {
+            TaskStatus.SUCCESS -> {
+                holder.statusBtn.setImageResource(ic_mtrl_checked_circle)
+                holder.statusBtn.isEnabled = false
+            }
+
+            TaskStatus.LOADING -> {
+                holder.statusBtn.setImageResource(android.R.color.transparent)
+                holder.statusBtn.isEnabled = false
+            }
+
+            TaskStatus.FAILURE -> {
+                holder.statusBtn.setImageResource(R.drawable.retry)
+                holder.statusBtn.isEnabled = true
+            }
+        }
+    }
+
+
+    // --------------------- NETWORK CALLBACK METHODS ---------------------
 
     override fun onPostHistoryUpdate() {
         activity.runOnUiThread {
@@ -62,7 +70,17 @@ class TaskHistoryListAdapter(val activity: Activity, private val taskHistory: Ta
         }
     }
 
-    override fun onUpdate(code: Int, body: String?) {
-        taskHistory.alertListeners()
+    override fun onPostHistoryAdd() {
+        activity.runOnUiThread {
+            notifyItemInserted(taskHistory.size - 1)
+        }
+    }
+
+
+    // --------------------- VIEW HOLDER ---------------------
+
+    inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        val textView: TextView = view.findViewById(R.id.postLogListText)
+        val statusBtn: ImageButton = view.findViewById(R.id.postLogListImgBtn)
     }
 }
