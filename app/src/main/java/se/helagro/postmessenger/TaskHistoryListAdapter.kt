@@ -33,8 +33,9 @@ class TaskHistoryListAdapter(private val activity: Activity, private val taskHis
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val postItem = taskHistory[position]
-        postItem.setOnUpdateStatus {
+        postItem.onUpdateStatus = {
             activity.runOnUiThread {
+                if (postItem.status == TaskStatus.SUCCESS) postItem.onUpdateStatus = null
                 drawBtn(postItem.status, holder.statusBtn)
             }
         }

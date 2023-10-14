@@ -1,4 +1,6 @@
-package se.helagro.postmessenger.taskitem
+package se.helagro.postmessenger.taskitem.property
+
+import se.helagro.postmessenger.taskitem.Destinations
 
 class TaskProject {
     companion object {

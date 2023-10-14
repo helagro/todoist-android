@@ -1,4 +1,4 @@
-package se.helagro.postmessenger.taskitem
+package se.helagro.postmessenger.taskitem.property
 
 class TaskDate() {
     companion object {
