@@ -8,7 +8,6 @@ import android.widget.ImageButton
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.R.drawable.ic_mtrl_checked_circle
-import se.helagro.postmessenger.network.NetworkCallback
 import se.helagro.postmessenger.network.NetworkHandler
 import se.helagro.postmessenger.taskhistory.TaskHistory
 import se.helagro.postmessenger.taskhistory.TaskHistoryListener
@@ -34,29 +33,35 @@ class TaskHistoryListAdapter(private val activity: Activity, private val taskHis
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val postItem = taskHistory[position]
+        postItem.setOnUpdateStatus {
+            activity.runOnUiThread {
+                drawBtn(postItem.status, holder.statusBtn)
+            }
+        }
+
         holder.textView.text = postItem.text
         holder.statusBtn.setOnClickListener {
-            val networkHandler = NetworkHandler()
-            networkHandler.postTask(postItem, object : NetworkCallback {
-                override fun onUpdate(code: Int, body: String?) {
-                    taskHistory.alertListeners()
-                }
-            })
+            NetworkHandler().postTask(postItem)
         }
-        when (postItem.status) {
+
+        drawBtn(postItem.status, holder.statusBtn)
+    }
+
+    private fun drawBtn(status: TaskStatus, statusBtn: ImageButton) {
+        when (status) {
             TaskStatus.SUCCESS -> {
-                holder.statusBtn.setImageResource(ic_mtrl_checked_circle)
-                holder.statusBtn.isEnabled = false
+                statusBtn.setImageResource(ic_mtrl_checked_circle)
+                statusBtn.isEnabled = false
             }
 
             TaskStatus.LOADING -> {
-                holder.statusBtn.setImageResource(android.R.color.transparent)
-                holder.statusBtn.isEnabled = false
+                statusBtn.setImageResource(R.drawable.arrow_up)
+                statusBtn.isEnabled = false
             }
 
             TaskStatus.FAILURE -> {
-                holder.statusBtn.setImageResource(R.drawable.retry)
-                holder.statusBtn.isEnabled = true
+                statusBtn.setImageResource(R.drawable.retry)
+                statusBtn.isEnabled = true
             }
         }
     }

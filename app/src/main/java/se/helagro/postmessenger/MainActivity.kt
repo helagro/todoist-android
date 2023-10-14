@@ -1,4 +1,5 @@
 package se.helagro.postmessenger
+
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -10,7 +11,6 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.appcompat.app.AppCompatActivity
 import se.helagro.postmessenger.databinding.ActivityMainBinding
-import se.helagro.postmessenger.network.NetworkCallback
 import se.helagro.postmessenger.network.NetworkHandler
 import se.helagro.postmessenger.settings.SettingsActivity
 import se.helagro.postmessenger.taskhistory.TaskHistory
@@ -25,9 +25,10 @@ class MainActivity : AppCompatActivity() {
 
     //=========== ENTRY POINTS ===========
 
-    private val settingsLauncher = registerForActivityResult(StartActivityForResult()) { _: ActivityResult ->
-        setupViews()
-    }
+    private val settingsLauncher =
+        registerForActivityResult(StartActivityForResult()) { _: ActivityResult ->
+            setupViews()
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,14 +51,14 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-    private fun goToSettings(){
+    private fun goToSettings() {
         settingsLauncher.launch(Intent(this, SettingsActivity::class.java))
     }
 
 
     //========== VIEW SETUP ==========
 
-    private fun setupViews(){
+    private fun setupViews() {
         //INPUT_FIELD
         focusOnInputField()
         binding.inputField.addTextChangedListener(HideCursor(binding.inputField))
@@ -66,11 +67,7 @@ class MainActivity : AppCompatActivity() {
             val newTask = Task(textInput)
             taskHistory.add(newTask)
 
-            networkHandler.postTask(newTask, object : NetworkCallback {
-                override fun onUpdate(code: Int, body: String?) {
-                    taskHistory.alertItemUpdate()
-                }
-            })
+            networkHandler.postTask(newTask)
             binding.inputField.setText("")
         }
 
@@ -80,7 +77,7 @@ class MainActivity : AppCompatActivity() {
         taskHistory.addListener(postListAdapter)
     }
 
-    private fun focusOnInputField(){
+    private fun focusOnInputField() {
         val imm: InputMethodManager =
             getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.showSoftInput(binding.inputField, InputMethodManager.SHOW_IMPLICIT)
@@ -101,9 +98,12 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-
     override fun onDestroy() {
         super.onDestroy()
-        (binding.postLogList.adapter as TaskHistoryListAdapter?)?.let { taskHistory.removeListener(it) }
+        (binding.postLogList.adapter as TaskHistoryListAdapter?)?.let {
+            taskHistory.removeListener(
+                it
+            )
+        }
     }
 }

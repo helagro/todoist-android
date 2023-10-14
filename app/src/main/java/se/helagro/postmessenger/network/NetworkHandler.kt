@@ -1,14 +1,13 @@
 package se.helagro.postmessenger.network
 
 import android.util.Log
-import se.helagro.postmessenger.taskitem.Task
-import se.helagro.postmessenger.taskitem.TaskStatus
 import se.helagro.postmessenger.settings.SettingsID
 import se.helagro.postmessenger.settings.StorageHandler
+import se.helagro.postmessenger.taskitem.Task
+import se.helagro.postmessenger.taskitem.TaskStatus
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.io.OutputStreamWriter
-import java.lang.StringBuilder
 import java.net.HttpURLConnection
 import java.net.URL
 import kotlin.concurrent.thread
@@ -16,13 +15,12 @@ import kotlin.concurrent.thread
 
 class NetworkHandler() {
 
-    companion object{
+    companion object {
         private const val TAG = "NetworkHandler"
         private const val CONNECT_TIMEOUT = 7000 // in milliseconds
     }
 
     private val apiKey: String = StorageHandler.getInstance().getString(SettingsID.API_KEY) ?: ""
-
 
 
     fun postTask(task: Task) {
@@ -33,13 +31,13 @@ class NetworkHandler() {
                 "POST"
             )
 
-            if(response.first == 200) task.status = TaskStatus.SUCCESS
+            if (response.first == 200) task.status = TaskStatus.SUCCESS
             else task.status = TaskStatus.FAILURE
         }
     }
 
 
-    fun getProjects(callback: NetworkCallback){
+    fun getProjects(callback: NetworkCallback) {
         thread {
             val response = makeRequest(
                 null,
@@ -52,7 +50,7 @@ class NetworkHandler() {
     }
 
 
-    fun getSections(callback: NetworkCallback){
+    fun getSections(callback: NetworkCallback) {
         thread {
             val response = makeRequest(
                 null,
@@ -65,7 +63,11 @@ class NetworkHandler() {
     }
 
 
-    private fun makeRequest(reqBody: String?, endpoint: String, method: String): Pair<Int, String?> {
+    private fun makeRequest(
+        reqBody: String?,
+        endpoint: String,
+        method: String
+    ): Pair<Int, String?> {
         var conn: HttpURLConnection? = null
 
         try {
@@ -74,7 +76,7 @@ class NetworkHandler() {
             conn.requestMethod = method
             conn.setRequestProperty("Authorization", "Bearer $apiKey")
             conn.setRequestProperty("X-Request-Id", java.util.UUID.randomUUID().toString())
-            if(method == "POST") conn.doOutput = true
+            if (method == "POST") conn.doOutput = true
 
             reqBody?.let {
                 conn.setRequestProperty("Content-Type", "application/json")
@@ -95,31 +97,40 @@ class NetworkHandler() {
             try {
                 conn?.disconnect()
             } catch (e: Exception) {
-                return Pair(-1, null)
+                Log.e(TAG, e.stackTraceToString())
             }
         }
     }
 
 
-    private fun errorDetails(conn: HttpURLConnection?, reqBody: String?, error: java.lang.Exception): String{
+    private fun errorDetails(
+        conn: HttpURLConnection?,
+        reqBody: String?,
+        error: java.lang.Exception
+    ): String {
         val builder = StringBuilder()
-        builder.appendLine(conn?.requestMethod)
         builder.appendLine(reqBody)
-
         builder.appendLine(error.stackTraceToString())
-        builder.appendLine(conn?.responseCode)
-        builder.appendLine(conn?.responseMessage)
 
-        try {
-            builder.appendLine(readBody(conn))
-        } catch(_: Exception){}
+        safeAppend(builder) { conn?.requestMethod }
+        safeAppend(builder) { conn?.responseCode }
+        safeAppend(builder) { conn?.responseMessage }
+        safeAppend(builder) { readBody(conn) }
 
         return builder.toString()
     }
 
+    private fun safeAppend(builder: StringBuilder, operation: () -> Any?) {
+        try {
+            val result = operation.invoke()
+            builder.appendLine(result)
+        } catch (e: Exception) {
+        }
+    }
+
 
     @Throws
-    private fun readBody(conn: HttpURLConnection?): String{
+    private fun readBody(conn: HttpURLConnection?): String {
 
         // return if null
         conn ?: run {
@@ -127,7 +138,8 @@ class NetworkHandler() {
         }
 
         val body = StringBuilder()
-        val reader = BufferedReader(InputStreamReader(conn.inputStream)) //nothing works without this!
+        val reader =
+            BufferedReader(InputStreamReader(conn.inputStream)) //nothing works without this!
         var line: String?
         while (reader.readLine().also { line = it } != null) {
             body.append(line).append("\n")

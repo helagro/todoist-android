@@ -7,7 +7,12 @@ class Task(val text: String) {
         val LABEL_REGEX = Regex("( |^)\\?(\\S+)")
     }
 
+    private var onUpdateStatus: ((TaskStatus) -> Unit)? = null
     var status = INITIAL_STATUS
+        set(value) {
+            field = value
+            onUpdateStatus?.invoke(value)
+        }
 
 
     // ================= TASK PROPERTIES ===================
@@ -31,6 +36,15 @@ class Task(val text: String) {
     }
 
     // ================= METHODS ===================
+
+
+    fun updateStatus(newStatus: TaskStatus) {
+        status = newStatus
+    }
+
+    fun setOnUpdateStatus(onUpdateStatus: (TaskStatus) -> Unit) {
+        this.onUpdateStatus = onUpdateStatus
+    }
 
     override fun toString(): String {
         return text

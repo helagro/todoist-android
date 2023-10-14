@@ -33,10 +33,4 @@ class TaskHistory() : ArrayList<Task>() {
             listener.onPostHistoryUpdate()
         }
     }
-
-    fun alertItemUpdate(pos: Int) {
-        for (listener in listeners) {
-            listener.onItemUpdate(pos)
-        }
-    }
 }
