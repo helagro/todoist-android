@@ -60,8 +60,6 @@ class MainActivity : AppCompatActivity() {
     private fun setupViews(){
         //INPUT_FIELD
         focusOnInputField()
-        val inputFieldListener = InputFieldListener(networkHandler, taskHistory)
-        binding.inputField.setOnEditorActionListener(inputFieldListener)
         binding.inputField.addTextChangedListener(HideCursor(binding.inputField))
         binding.sendBtn.setOnClickListener {
             val textInput = binding.inputField.text.toString()
