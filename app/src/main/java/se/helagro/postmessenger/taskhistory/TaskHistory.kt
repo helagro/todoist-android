@@ -28,9 +28,15 @@ class TaskHistory() : ArrayList<Task>() {
         alertListeners()
     }
 
-    fun alertListeners() {
+    private fun alertListeners() {
         for (listener in listeners) {
             listener.onPostHistoryUpdate()
+        }
+    }
+
+    fun alertItemUpdate(pos: Int) {
+        for (listener in listeners) {
+            listener.onItemUpdate(pos)
         }
     }
 }

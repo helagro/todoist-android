@@ -68,7 +68,7 @@ class MainActivity : AppCompatActivity() {
 
             networkHandler.postTask(newTask, object : NetworkCallback {
                 override fun onUpdate(code: Int, body: String?) {
-                    taskHistory.alertListeners()
+                    taskHistory.alertItemUpdate()
                 }
             })
             binding.inputField.setText("")

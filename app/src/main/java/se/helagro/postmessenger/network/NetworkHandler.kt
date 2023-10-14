@@ -25,7 +25,7 @@ class NetworkHandler() {
 
 
 
-    fun postTask(task: Task, callback: NetworkCallback) {
+    fun postTask(task: Task) {
         thread {
             val response = makeRequest(
                 task.toJSON(),
@@ -35,8 +35,6 @@ class NetworkHandler() {
 
             if(response.first == 200) task.status = TaskStatus.SUCCESS
             else task.status = TaskStatus.FAILURE
-
-            callback.onUpdate(response.first, response.second)
         }
     }
 

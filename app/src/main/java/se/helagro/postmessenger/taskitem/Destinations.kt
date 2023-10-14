@@ -1,6 +1,7 @@
 package se.helagro.postmessenger.taskitem
 
 import com.google.gson.Gson
+import com.google.gson.annotations.SerializedName
 import se.helagro.postmessenger.network.NetworkCallback
 import se.helagro.postmessenger.network.NetworkHandler
 
@@ -35,7 +36,7 @@ object Destinations {
     fun parseSections(body: String) {
         data class Section(
             val id: String,
-            val project_id: String,
+            @SerializedName("project_id") val projectID: String,
             val name: String
         )
 
@@ -43,7 +44,7 @@ object Destinations {
 
         synchronized(destinations) {
             destinations.addAll(
-                sections.map { Destination(it.id, it.project_id, it.name) }
+                sections.map { Destination(it.id, it.projectID, it.name) }
             )
         }
     }
