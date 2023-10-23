@@ -62,6 +62,58 @@ class NetworkHandler() {
         }
     }
 
+    fun getProject(project: String, callback: NetworkCallback) {
+        thread {
+            val response = makeRequest(
+                null,
+                "https://api.todoist.com/rest/v2/tasks?project_id=${project}",
+                "GET"
+            )
+
+            callback.onUpdate(response.first, response.second)
+        }
+    }
+
+    fun updateTask(id: String, task: Task, callback: NetworkCallback) {
+        thread {
+            val response = makeRequest(
+                task.toJSON(),
+                "https://api.todoist.com/rest/v2/tasks/${id}",
+                "POST"
+            )
+
+            callback.onUpdate(response.first, response.second)
+        }
+    }
+
+    fun move(id: String, projectID: String, sectionID: String?, callback: NetworkCallback) {
+        val body = """
+            {
+                "commands": [
+                    {
+                        "type": "item_move",
+                        "uuid": "${java.util.UUID.randomUUID()}",
+                        "args": {
+                            "id": "$id",
+                            "project_id": "$projectID"
+                            ${if (sectionID != null) ",\"section_id\":\"${sectionID}\"" else ""}
+                        }
+                    }
+                ]
+            }
+        """.trimIndent().replace("\n", "").replace(" ", "")
+
+        thread {
+            val response = makeRequest(
+                body,
+                "https://api.todoist.com/sync/v9/sync",
+                "POST"
+            )
+
+            callback.onUpdate(response.first, response.second)
+        }
+    }
+
 
     private fun makeRequest(
         reqBody: String?,

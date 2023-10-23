@@ -1,24 +1,32 @@
 package se.helagro.postmessenger.taskitem
 
+import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
 import se.helagro.postmessenger.network.NetworkCallback
 import se.helagro.postmessenger.network.NetworkHandler
 
 object Destinations {
+    private val TAG = Destinations.javaClass.name
     private val destinations = ArrayList<Destination>()
 
 
-    fun load(networkHandler: NetworkHandler) {
+    fun load(networkHandler: NetworkHandler, errorCallback: (() -> Unit)) {
         networkHandler.getProjects(object : NetworkCallback {
             override fun onUpdate(code: Int, body: String?) {
-                if (code == 200 && body != null) parseProjects(body)
+                if (code == 200 && body != null) {
+                    parseProjects(body)
+                    Log.v(TAG, "Loaded projects, total destinations amt: ${destinations.size}")
+                } else errorCallback()
             }
         })
 
         networkHandler.getSections(object : NetworkCallback {
             override fun onUpdate(code: Int, body: String?) {
-                if (code == 200 && body != null) parseSections(body)
+                if (code == 200 && body != null) {
+                    parseSections(body)
+                    Log.v(TAG, "Loaded sections, total destinations amt: ${destinations.size}")
+                } else errorCallback()
             }
         })
     }

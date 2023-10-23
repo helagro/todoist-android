@@ -6,7 +6,7 @@ class TaskContent {
         fun addJSON(json: StringBuilder, text: String) {
             val content = this.getContentString(text) ?: return
 
-            json.append(",\"content\":\"${content}\"")
+            json.append("\"content\":\"${content}\"")
         }
 
         private fun getContentString(text: String): String {

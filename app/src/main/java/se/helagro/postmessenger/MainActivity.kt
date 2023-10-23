@@ -7,6 +7,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
+import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.appcompat.app.AppCompatActivity
@@ -38,7 +39,11 @@ class MainActivity : AppCompatActivity() {
 
         window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE)
 
-        Destinations.load(networkHandler)
+        Destinations.load(networkHandler) {
+            runOnUiThread {
+                Toast.makeText(this, "Failed to load destinations", Toast.LENGTH_LONG).show()
+            }
+        }
         setupViews()
     }
 
@@ -92,8 +97,15 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == R.id.action_settings) goToSettings()
-        else if (item.itemId == R.id.action_clear) taskHistory.clear()
+        when (item.itemId) {
+            R.id.action_settings -> goToSettings()
+            R.id.action_clear -> taskHistory.clear()
+            R.id.action_project -> {
+                val intent = Intent(this, ProjectActivity::class.java)
+                startActivity(intent)
+            }
+        }
+
         return true
     }
 
