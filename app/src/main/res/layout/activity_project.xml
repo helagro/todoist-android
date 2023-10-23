@@ -19,11 +19,19 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
+        <ImageButton
+            android:id="@+id/doneBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginHorizontal="10dp"
+            android:background="@null"
+            android:contentDescription="complete"
+            android:src="@drawable/radio_btn" />
+
         <EditText
             android:id="@+id/inputField"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="15dp"
             android:layout_marginBottom="10dp"
             android:layout_weight="1"
             android:contentDescription="Main input field"

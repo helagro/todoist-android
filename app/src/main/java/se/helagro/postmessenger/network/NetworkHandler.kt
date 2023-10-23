@@ -86,7 +86,19 @@ class NetworkHandler() {
         }
     }
 
-    fun move(id: String, projectID: String, sectionID: String?, callback: NetworkCallback) {
+    fun closeTask(id: String, callback: NetworkCallback) {
+        thread {
+            val response = makeRequest(
+                null,
+                "https://api.todoist.com/rest/v2/tasks/$id/close",
+                "POST"
+            )
+
+            callback.onUpdate(response.first, response.second)
+        }
+    }
+
+    fun move(id: String, projectID: String?, sectionID: String?, callback: NetworkCallback) {
         val body = """
             {
                 "commands": [
@@ -94,8 +106,8 @@ class NetworkHandler() {
                         "type": "item_move",
                         "uuid": "${java.util.UUID.randomUUID()}",
                         "args": {
-                            "id": "$id",
-                            "project_id": "$projectID"
+                            "id": "$id"
+                            ${if (projectID != null) ",\"project_id\":\"${projectID}\"" else ""}
                             ${if (sectionID != null) ",\"section_id\":\"${sectionID}\"" else ""}
                         }
                     }

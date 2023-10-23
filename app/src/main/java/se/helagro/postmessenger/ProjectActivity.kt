@@ -25,7 +25,6 @@ class ProjectActivity() : AppCompatActivity() {
             override fun onUpdate(code: Int, body: String?) {
                 tasks = Gson().fromJson(body, Array<DownloadedTask>::class.java)
 
-                tasks?.forEach { println(it) }
                 runOnUiThread {
                     nextTask()
                 }
@@ -46,6 +45,11 @@ class ProjectActivity() : AppCompatActivity() {
             nextTask()
         }
 
+        binding!!.doneBtn.setOnClickListener {
+            closeTask()
+            nextTask()
+        }
+
         if (tasks != null && tasks!!.isNotEmpty()) binding!!.inputField.setText(tasks!![0].content)
     }
 
@@ -56,6 +60,10 @@ class ProjectActivity() : AppCompatActivity() {
 
         val content = binding!!.inputField.text.toString().trim()
         val task = tasks!![taskI]
+        if (content == task.content) {
+            Log.v(TAG, "No changes to task \"$content\"")
+            return
+        }
 
         val newTask = Task(content)
 
@@ -89,13 +97,21 @@ class ProjectActivity() : AppCompatActivity() {
             return
         }
 
+        var projectID: String? = destinationIDs.first
+        if (destinationIDs.second != null) projectID = null
+
         networkHandler.move(
             task.id,
-            destinationIDs.first,
+            projectID,
             destinationIDs.second,
             object : NetworkCallback {
                 override fun onUpdate(code: Int, body: String?) {
-                    if (code == 200) Log.v(TAG, "Moved task \"$content\"")
+                    if (code == 200) Log.v(
+                        TAG,
+                        "Moved task \"$content\" to " +
+                                "project \"${destinationIDs.first}\", " +
+                                "section \"${destinationIDs.second}\""
+                    )
                     else {
                         runOnUiThread {
                             Toast.makeText(
@@ -107,6 +123,25 @@ class ProjectActivity() : AppCompatActivity() {
                     }
                 }
             })
+    }
+
+    private fun closeTask() {
+        if (tasks == null) return
+
+        networkHandler.closeTask(tasks!![taskI].id, object : NetworkCallback {
+            override fun onUpdate(code: Int, body: String?) {
+                if (code == 200) Log.v(TAG, "Closed task")
+                else {
+                    runOnUiThread {
+                        Toast.makeText(
+                            this@ProjectActivity,
+                            "Failed to close task: $code",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+            }
+        })
     }
 
     private fun nextTask() {
