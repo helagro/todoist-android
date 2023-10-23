@@ -7,6 +7,16 @@
     android:orientation="vertical"
     tools:context=".MainActivity">
 
+    <TextView
+        android:id="@+id/inboxCount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:contentDescription="Inbox counter"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
 
     <LinearLayout
         android:id="@+id/linearLayout"
@@ -34,7 +44,6 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
             android:layout_weight="1"
-            android:contentDescription="Main input field"
             android:imeOptions="actionSend"
             android:inputType="textMultiLine"
             android:textCursorDrawable="@drawable/cursor"

@@ -130,7 +130,7 @@ class ProjectActivity() : AppCompatActivity() {
 
         networkHandler.closeTask(tasks!![taskI].id, object : NetworkCallback {
             override fun onUpdate(code: Int, body: String?) {
-                if (code == 200) Log.v(TAG, "Closed task")
+                if (code == 200 || code == 204) Log.v(TAG, "Closed task")
                 else {
                     runOnUiThread {
                         Toast.makeText(
@@ -150,6 +150,7 @@ class ProjectActivity() : AppCompatActivity() {
         if (taskI == tasks!!.size - 1) return
 
         taskI++
+        binding!!.inboxCount.text = "${taskI + 1}/${tasks!!.size}"
         val task = tasks!![taskI]
 
         var text = task.content
