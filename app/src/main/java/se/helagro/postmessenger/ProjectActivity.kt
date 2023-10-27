@@ -23,11 +23,15 @@ class ProjectActivity() : AppCompatActivity() {
     init {
         networkHandler.getProject("2302810404", object : NetworkCallback {
             override fun onUpdate(code: Int, body: String?) {
-                tasks = Gson().fromJson(body, Array<DownloadedTask>::class.java)
+                if (code != 200) alert("Failed to get project: $code")
+                else {
+                    tasks = Gson().fromJson(body, Array<DownloadedTask>::class.java)
 
-                runOnUiThread {
-                    nextTask()
+                    runOnUiThread {
+                        nextTask()
+                    }
                 }
+
             }
         })
     }
@@ -69,32 +73,15 @@ class ProjectActivity() : AppCompatActivity() {
 
         networkHandler.updateTask(task.id, newTask, object : NetworkCallback {
             override fun onUpdate(code: Int, body: String?) {
-                if (code != 200) {
-                    runOnUiThread {
-                        Toast.makeText(
-                            this@ProjectActivity,
-                            "Failed to update task: $code",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                }
-
-                if (TaskProject.exists(content)) moveTask(task, content)
+                if (code != 200) alert("Failed to update task: $code")
+                else if (TaskProject.exists(content)) moveTask(task, content)
             }
         })
     }
 
     private fun moveTask(task: DownloadedTask, content: String) {
         val destinationIDs = TaskProject.getDestinationIDs(content) ?: run {
-            runOnUiThread {
-                Toast.makeText(
-                    this@ProjectActivity,
-                    "Failed to move task: Could not find destination",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-            Log.v(TAG, "Failed to move task: Could not find destination")
-            return
+            return alert("Failed to move task: Could not find destination")
         }
 
         var projectID: String? = destinationIDs.first
@@ -112,15 +99,7 @@ class ProjectActivity() : AppCompatActivity() {
                                 "project \"${destinationIDs.first}\", " +
                                 "section \"${destinationIDs.second}\""
                     )
-                    else {
-                        runOnUiThread {
-                            Toast.makeText(
-                                this@ProjectActivity,
-                                "Failed to move task: $code",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }
-                    }
+                    else alert("Failed to move task: $code")
                 }
             })
     }
@@ -131,15 +110,7 @@ class ProjectActivity() : AppCompatActivity() {
         networkHandler.closeTask(tasks!![taskI].id, object : NetworkCallback {
             override fun onUpdate(code: Int, body: String?) {
                 if (code == 200 || code == 204) Log.v(TAG, "Closed task")
-                else {
-                    runOnUiThread {
-                        Toast.makeText(
-                            this@ProjectActivity,
-                            "Failed to close task: $code",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                }
+                else alert("Failed to close task: $code")
             }
         })
     }
@@ -173,5 +144,18 @@ class ProjectActivity() : AppCompatActivity() {
         if (item.itemId == android.R.id.home) finish()
 
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun alert(msg: String?) {
+        if (msg == null) return
+
+        Log.v(TAG, msg)
+        runOnUiThread {
+            Toast.makeText(
+                this@ProjectActivity,
+                msg,
+                Toast.LENGTH_LONG
+            ).show()
+        }
     }
 }
