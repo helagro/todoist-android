@@ -2,9 +2,8 @@ package se.helagro.postmessenger.taskitem.property
 
 class TaskContent {
     companion object {
-
         fun addJSON(json: StringBuilder, text: String) {
-            val content = this.getContentString(text) ?: return
+            val content = this.getContentString(text)
 
             json.append("\"content\":\"${content}\"")
         }

@@ -116,9 +116,9 @@ class ProjectActivity() : AppCompatActivity() {
     }
 
     private fun nextTask() {
-        if (tasks == null) return
+        if (tasks == null) return alert("No tasks")
         if (binding == null) return
-        if (taskI == tasks!!.size - 1) return
+        if (taskI == tasks!!.size - 1) return alert("No more tasks")
 
         taskI++
         binding!!.inboxCount.text = "${taskI + 1}/${tasks!!.size}"
