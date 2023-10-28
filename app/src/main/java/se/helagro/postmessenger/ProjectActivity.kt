@@ -64,7 +64,7 @@ class ProjectActivity() : AppCompatActivity() {
 
         val content = binding!!.inputField.text.toString().trim()
         val task = tasks!![taskI]
-        if (content == task.content) {
+        if (content == task.toString()) {
             Log.v(TAG, "No changes to task \"$content\"")
             return
         }
@@ -124,17 +124,7 @@ class ProjectActivity() : AppCompatActivity() {
         binding!!.inboxCount.text = "${taskI + 1}/${tasks!!.size}"
         val task = tasks!![taskI]
 
-        var text = task.content
-        val labelString = task.labels.joinToString(" ", transform = { str -> "?$str" })
-        val priorityString = task.priority.let {
-            if (it == 1) ""
-            else
-                "p${5 - it}"
-        } ?: ""
-
-        if (labelString.isNotEmpty()) text += " $labelString"
-        if (priorityString.isNotEmpty()) text += " $priorityString"
-        text += " "
+        val text = "$task "
 
         binding!!.inputField.setText(text)
         binding!!.inputField.setSelection(text.length)
