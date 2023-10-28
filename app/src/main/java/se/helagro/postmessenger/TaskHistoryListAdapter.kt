@@ -79,6 +79,10 @@ class TaskHistoryListAdapter(private val activity: Activity, private val taskHis
     override fun onPostHistoryAdd() {
         activity.runOnUiThread {
             notifyItemInserted(taskHistory.size - 1)
+
+            // scroll to last position of recycler view
+            val lastPosition = taskHistory.size - 1
+            (activity as MainActivity).scrollToPosition(lastPosition)
         }
     }
 

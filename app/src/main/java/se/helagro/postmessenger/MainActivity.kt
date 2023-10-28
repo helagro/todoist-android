@@ -110,6 +110,13 @@ class MainActivity : AppCompatActivity() {
     }
 
 
+    // ============= OTHER =============
+
+    public fun scrollToPosition(position: Int) {
+        binding.postLogList.scrollToPosition(position)
+    }
+
+
     override fun onDestroy() {
         super.onDestroy()
         (binding.postLogList.adapter as TaskHistoryListAdapter?)?.let {
