@@ -64,6 +64,8 @@ class ProjectActivity() : AppCompatActivity() {
 
         val content = binding!!.inputField.text.toString().trim()
         val task = tasks!![taskI]
+
+        Log.v(TAG, "$task, $content")
         if (content == task.toString()) {
             Log.v(TAG, "No changes to task \"$content\"")
             return

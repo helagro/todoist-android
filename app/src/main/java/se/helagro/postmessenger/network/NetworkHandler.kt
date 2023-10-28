@@ -70,6 +70,7 @@ class NetworkHandler() {
                 "GET"
             )
 
+            Log.v(TAG, "Downloaded tasks; Code: ${response.first}")
             callback.onUpdate(response.first, response.second)
         }
     }

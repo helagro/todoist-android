@@ -18,7 +18,6 @@ data class DownloadedTask(
 
         if (labelString.isNotEmpty()) text += " $labelString"
         if (priorityString.isNotEmpty()) text += " $priorityString"
-        text += " "
 
         return text
     }
