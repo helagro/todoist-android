@@ -21,7 +21,7 @@ class ProjectActivity() : AppCompatActivity() {
     private val TAG = "ProjectActivity"
 
     init {
-        networkHandler.getProject("2302810404", object : NetworkCallback {
+        networkHandler.getProject("inbox", object : NetworkCallback {
             override fun onUpdate(code: Int, body: String?) {
                 if (code != 200) alert("Failed to get project: $code")
                 else {

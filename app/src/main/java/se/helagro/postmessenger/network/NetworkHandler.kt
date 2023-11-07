@@ -63,10 +63,11 @@ class NetworkHandler() {
     }
 
     fun getProject(project: String, callback: NetworkCallback) {
+        val filter = "!subtask%20%26%20%23${project}"
         thread {
             val response = makeRequest(
                 null,
-                "https://api.todoist.com/rest/v2/tasks?project_id=${project}",
+                "https://api.todoist.com/rest/v2/tasks?filter=${filter}",
                 "GET"
             )
 
