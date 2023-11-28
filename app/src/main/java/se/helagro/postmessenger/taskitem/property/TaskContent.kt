@@ -14,6 +14,7 @@ class TaskContent {
             content = TaskLabels.consume(content)
             content = TaskPriority.consume(content)
             content = content.replace("\"", "\\\"")
+            content = content.replace("\n", "\\n")
             return content.trim()
         }
     }
