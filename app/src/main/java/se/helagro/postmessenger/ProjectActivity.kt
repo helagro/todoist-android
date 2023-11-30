@@ -2,6 +2,7 @@ package se.helagro.postmessenger
 
 import android.os.Bundle
 import android.util.Log
+import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -14,11 +15,23 @@ import se.helagro.postmessenger.taskitem.Task
 import se.helagro.postmessenger.taskitem.property.TaskProject
 
 class ProjectActivity() : AppCompatActivity() {
+    //-------------------------------<  VARIABLES  >----------------------------
+
+    // CONSTANTS
+    private val TAG = "ProjectActivity"
+
+    // OBJECTS
     private val networkHandler = NetworkHandler()
+    private var binding: ActivityProjectBinding? = null
+
+    // TASKS
     private var tasks: Array<DownloadedTask>? = null
     private var taskI = -1
-    private var binding: ActivityProjectBinding? = null
-    private val TAG = "ProjectActivity"
+
+    // OTHER
+    private var isAdding = false
+
+    //-------------------------------<  INIT  >----------------------------
 
     init {
         networkHandler.getProject("inbox", object : NetworkCallback {
@@ -31,10 +44,11 @@ class ProjectActivity() : AppCompatActivity() {
                         nextTask()
                     }
                 }
-
             }
         })
     }
+
+    //-------------------------------<  LIFECYCLE  >----------------------------
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,8 +59,14 @@ class ProjectActivity() : AppCompatActivity() {
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         binding!!.sendBtn.setOnClickListener {
-            updateTask()
-            nextTask()
+            if (isAdding) {
+                addTask()
+                binding!!.inputField.setText(tasks!![taskI].content)
+                isAdding = false
+            } else {
+                updateTask()
+                nextTask()
+            }
         }
 
         binding!!.doneBtn.setOnClickListener {
@@ -55,6 +75,18 @@ class ProjectActivity() : AppCompatActivity() {
         }
 
         if (tasks != null && tasks!!.isNotEmpty()) binding!!.inputField.setText(tasks!![0].content)
+    }
+
+    //---------------------------------<  TASKS  >------------------------------
+
+    private fun addTask() {
+        if (tasks == null) return
+        if (binding == null) return
+
+        val content = binding!!.inputField.text.toString().trim()
+        val task = Task(content)
+
+        networkHandler.postTask(task)
     }
 
     private fun updateTask() {
@@ -132,11 +164,24 @@ class ProjectActivity() : AppCompatActivity() {
         binding!!.inputField.setSelection(text.length)
     }
 
+    //----------------------------------<  MENU  >------------------------------
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.activity_project_app_bar, menu)
+        return true
+    }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == android.R.id.home) finish()
+        if (item.itemId == R.id.action_add) {
+            isAdding = true
+            binding!!.inputField.setText("")
+        }
 
         return super.onOptionsItemSelected(item)
     }
+
+    //--------------------------------<  HELPERS  >-----------------------------
 
     private fun alert(msg: String?) {
         if (msg == null) return
