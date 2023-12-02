@@ -60,9 +60,7 @@ class ProjectActivity() : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         binding!!.sendBtn.setOnClickListener {
             if (isAdding) {
-                addTask()
-                binding!!.inputField.setText(tasks!![taskI].content)
-                isAdding = false
+                onAddTask()
             } else {
                 updateTask()
                 nextTask()
@@ -162,6 +160,16 @@ class ProjectActivity() : AppCompatActivity() {
 
         binding!!.inputField.setText(text)
         binding!!.inputField.setSelection(text.length)
+    }
+
+    private fun onAddTask() {
+        addTask()
+
+        val text = tasks!![taskI].content + " "
+        binding!!.inputField.setText(tasks!![taskI].content)
+        binding!!.inputField.setSelection(text.length)
+        
+        isAdding = false
     }
 
     //----------------------------------<  MENU  >------------------------------
