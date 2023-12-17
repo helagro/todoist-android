@@ -8,7 +8,7 @@ data class DownloadedTask(
 ) {
     override fun toString(): String {
         var text = content
-        val labelString = labels.joinToString(" ", transform = { str -> "?$str" })
+        val labelString = labels.joinToString(" ", transform = { str -> "!$str" })
         val priorityString = priority.let {
             if (it == 1) ""
             else

@@ -142,7 +142,7 @@ class ProjectActivity() : AppCompatActivity() {
         val text = "$task "
 
         binding!!.inputField.setText(text)
-        binding!!.inputField.setSelection(text.length)
+        binding!!.inputField.setSelection(text.length - 1)
     }
 
     private fun onAddTask() {
@@ -150,7 +150,7 @@ class ProjectActivity() : AppCompatActivity() {
 
         val text = tasks!![taskI].content + " "
         binding!!.inputField.setText(tasks!![taskI].content)
-        binding!!.inputField.setSelection(text.length)
+        binding!!.inputField.setSelection(text.length - 1)
 
         isAdding = false
     }

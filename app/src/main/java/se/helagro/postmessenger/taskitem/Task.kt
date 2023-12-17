@@ -22,6 +22,7 @@ class Task(val text: String) {
     fun toBody(): String {
         var content = text.replace(":", "#")
         content = content.replace("!", "@")
+        content = content.replace(")", "/")
 
         return "text=$content"
     }
