@@ -13,20 +13,16 @@ class Task(val text: String) {
             onUpdateStatus?.invoke(value)
         }
 
-    // ================= METHODS ===================
+    //--------------------------------<  METHODS  >-----------------------------
 
     override fun toString(): String {
         return text
     }
 
-    fun toJSON(): String {
-        val json = StringBuilder()
-        json.append("{")
+    fun toBody(): String {
+        var content = text.replace(":", "#")
+        content = content.replace("!", "@")
 
-        var content = text.replace("\"", "\\\"")
-        content = content.replace("\n", "\\n")
-
-        json.append("}")
-        return "text=$json"
+        return "text=$content"
     }
 }

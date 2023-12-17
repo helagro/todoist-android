@@ -24,8 +24,8 @@ class NetworkHandler() {
     fun postTask(task: Task) {
         thread {
             val response = makeRequest(
-                task.toJSON(),
-                "https://api.todoist.com/rest/v2/tasks",
+                task.toBody(),
+                "https://api.todoist.com/sync/v9/quick/add",
                 "POST"
             )
 
@@ -76,8 +76,6 @@ class NetworkHandler() {
             if (method == "POST") conn.doOutput = true
 
             reqBody?.let {
-                conn.setRequestProperty("Content-Type", "application/json")
-
                 val writer = OutputStreamWriter(conn.outputStream)
                 writer.write(reqBody)
                 writer.flush()
