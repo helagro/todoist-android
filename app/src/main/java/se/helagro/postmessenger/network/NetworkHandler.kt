@@ -12,7 +12,6 @@ import java.net.HttpURLConnection
 import java.net.URL
 import kotlin.concurrent.thread
 
-
 class NetworkHandler() {
 
     companion object {
@@ -21,7 +20,6 @@ class NetworkHandler() {
     }
 
     private val apiKey: String = StorageHandler.getInstance().getString(SettingsID.API_KEY) ?: ""
-
 
     fun postTask(task: Task) {
         thread {
@@ -33,32 +31,6 @@ class NetworkHandler() {
 
             if (response.first == 200) task.status = TaskStatus.SUCCESS
             else task.status = TaskStatus.FAILURE
-        }
-    }
-
-
-    fun getProjects(callback: NetworkCallback) {
-        thread {
-            val response = makeRequest(
-                null,
-                "https://api.todoist.com/rest/v2/projects",
-                "GET"
-            )
-
-            callback.onUpdate(response.first, response.second)
-        }
-    }
-
-
-    fun getSections(callback: NetworkCallback) {
-        thread {
-            val response = makeRequest(
-                null,
-                "https://api.todoist.com/rest/v2/sections",
-                "GET"
-            )
-
-            callback.onUpdate(response.first, response.second)
         }
     }
 
@@ -76,18 +48,6 @@ class NetworkHandler() {
         }
     }
 
-    fun updateTask(id: String, task: Task, callback: NetworkCallback) {
-        thread {
-            val response = makeRequest(
-                task.toJSON(),
-                "https://api.todoist.com/rest/v2/tasks/${id}",
-                "POST"
-            )
-
-            callback.onUpdate(response.first, response.second)
-        }
-    }
-
     fun closeTask(id: String, callback: NetworkCallback) {
         thread {
             val response = makeRequest(
@@ -99,35 +59,6 @@ class NetworkHandler() {
             callback.onUpdate(response.first, response.second)
         }
     }
-
-    fun move(id: String, projectID: String?, sectionID: String?, callback: NetworkCallback) {
-        val body = """
-            {
-                "commands": [
-                    {
-                        "type": "item_move",
-                        "uuid": "${java.util.UUID.randomUUID()}",
-                        "args": {
-                            "id": "$id"
-                            ${if (projectID != null) ",\"project_id\":\"${projectID}\"" else ""}
-                            ${if (sectionID != null) ",\"section_id\":\"${sectionID}\"" else ""}
-                        }
-                    }
-                ]
-            }
-        """.trimIndent().replace("\n", "").replace(" ", "")
-
-        thread {
-            val response = makeRequest(
-                body,
-                "https://api.todoist.com/sync/v9/sync",
-                "POST"
-            )
-
-            callback.onUpdate(response.first, response.second)
-        }
-    }
-
 
     private fun makeRequest(
         reqBody: String?,
@@ -154,7 +85,6 @@ class NetworkHandler() {
 
             val resBody = readBody(conn)
             return Pair(conn.responseCode, resBody)
-
         } catch (e: Exception) {
             val details = errorDetails(conn, reqBody, e)
             Log.e(TAG, details)
@@ -167,7 +97,6 @@ class NetworkHandler() {
             }
         }
     }
-
 
     private fun errorDetails(
         conn: HttpURLConnection?,
@@ -193,7 +122,6 @@ class NetworkHandler() {
         } catch (e: Exception) {
         }
     }
-
 
     @Throws
     private fun readBody(conn: HttpURLConnection?): String {

@@ -12,7 +12,7 @@ import se.helagro.postmessenger.network.NetworkCallback
 import se.helagro.postmessenger.network.NetworkHandler
 import se.helagro.postmessenger.taskitem.DownloadedTask
 import se.helagro.postmessenger.taskitem.Task
-import se.helagro.postmessenger.taskitem.property.TaskProject
+import se.helagro.postmessenger.taskitem.TaskStatus
 
 class ProjectActivity() : AppCompatActivity() {
     //-------------------------------<  VARIABLES  >----------------------------
@@ -102,38 +102,21 @@ class ProjectActivity() : AppCompatActivity() {
         }
 
         val newTask = Task(content)
-
-        networkHandler.updateTask(task.id, newTask, object : NetworkCallback {
-            override fun onUpdate(code: Int, body: String?) {
-                if (code != 200) alert("Failed to update task: $code")
-                else if (TaskProject.exists(content)) moveTask(task, content)
+        newTask.onUpdateStatus = {
+            if (newTask.status == TaskStatus.SUCCESS) {
+                newTask.onUpdateStatus = null
+                networkHandler.closeTask(task.id, object : NetworkCallback {
+                    override fun onUpdate(code: Int, body: String?) {
+                        if (code == 200 || code == 204) Log.v(TAG, "Closed task")
+                        else alert("Failed to close task: $code")
+                    }
+                })
+            } else if (newTask.status == TaskStatus.FAILURE) {
+                alert("Failed to update task")
             }
-        })
-    }
-
-    private fun moveTask(task: DownloadedTask, content: String) {
-        val destinationIDs = TaskProject.getDestinationIDs(content) ?: run {
-            return alert("Failed to move task: Could not find destination")
         }
 
-        var projectID: String? = destinationIDs.first
-        if (destinationIDs.second != null) projectID = null
-
-        networkHandler.move(
-            task.id,
-            projectID,
-            destinationIDs.second,
-            object : NetworkCallback {
-                override fun onUpdate(code: Int, body: String?) {
-                    if (code == 200) Log.v(
-                        TAG,
-                        "Moved task \"$content\" to " +
-                                "project \"${destinationIDs.first}\", " +
-                                "section \"${destinationIDs.second}\""
-                    )
-                    else alert("Failed to move task: $code")
-                }
-            })
+        networkHandler.postTask(newTask)
     }
 
     private fun closeTask() {
@@ -168,7 +151,7 @@ class ProjectActivity() : AppCompatActivity() {
         val text = tasks!![taskI].content + " "
         binding!!.inputField.setText(tasks!![taskI].content)
         binding!!.inputField.setSelection(text.length)
-        
+
         isAdding = false
     }
 

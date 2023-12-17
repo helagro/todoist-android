@@ -7,7 +7,6 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
-import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.appcompat.app.AppCompatActivity
@@ -15,7 +14,6 @@ import se.helagro.postmessenger.databinding.ActivityMainBinding
 import se.helagro.postmessenger.network.NetworkHandler
 import se.helagro.postmessenger.settings.SettingsActivity
 import se.helagro.postmessenger.taskhistory.TaskHistory
-import se.helagro.postmessenger.taskitem.Destinations
 import se.helagro.postmessenger.taskitem.Task
 
 class MainActivity : AppCompatActivity() {
@@ -23,8 +21,7 @@ class MainActivity : AppCompatActivity() {
     private var networkHandler: NetworkHandler = NetworkHandler()
     private lateinit var binding: ActivityMainBinding
 
-
-    //=========== ENTRY POINTS ===========
+    //------------------------------<  ENTRY POINTS  >--------------------------
 
     private val settingsLauncher =
         registerForActivityResult(StartActivityForResult()) { _: ActivityResult ->
@@ -39,11 +36,6 @@ class MainActivity : AppCompatActivity() {
 
         window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE)
 
-        Destinations.load(networkHandler) {
-            runOnUiThread {
-                Toast.makeText(this, "Failed to load destinations", Toast.LENGTH_LONG).show()
-            }
-        }
         setupViews()
     }
 
@@ -55,13 +47,11 @@ class MainActivity : AppCompatActivity() {
         inputMethodManager.showSoftInput(binding.inputField, InputMethodManager.SHOW_IMPLICIT)
     }
 
-
     private fun goToSettings() {
         settingsLauncher.launch(Intent(this, SettingsActivity::class.java))
     }
 
-
-    //========== VIEW SETUP ==========
+    //-------------------------------<  VIEW SETUP  >---------------------------
 
     private fun setupViews() {
         //INPUT_FIELD
@@ -88,8 +78,7 @@ class MainActivity : AppCompatActivity() {
         imm.showSoftInput(binding.inputField, InputMethodManager.SHOW_IMPLICIT)
     }
 
-
-    //=========== MENU ===========
+    //----------------------------------<  MENU  >------------------------------
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.activity_main_app_bar, menu)
@@ -109,13 +98,11 @@ class MainActivity : AppCompatActivity() {
         return true
     }
 
+    //---------------------------------<  OTHER  >------------------------------
 
-    // ============= OTHER =============
-
-    public fun scrollToPosition(position: Int) {
+    fun scrollToPosition(position: Int) {
         binding.postLogList.scrollToPosition(position)
     }
-
 
     override fun onDestroy() {
         super.onDestroy()
