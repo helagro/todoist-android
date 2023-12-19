@@ -13,10 +13,8 @@ import se.helagro.postmessenger.taskhistory.TaskHistory
 import se.helagro.postmessenger.taskhistory.TaskHistoryListener
 import se.helagro.postmessenger.taskitem.TaskStatus
 
-
 class TaskHistoryListAdapter(private val activity: Activity, private val taskHistory: TaskHistory) :
     RecyclerView.Adapter<TaskHistoryListAdapter.ViewHolder>(), TaskHistoryListener {
-
 
     // --------------------- RECYCLER VIEW ADAPTER METHODS ---------------------
 
@@ -67,7 +65,6 @@ class TaskHistoryListAdapter(private val activity: Activity, private val taskHis
         }
     }
 
-
     // --------------------- NETWORK CALLBACK METHODS ---------------------
 
     override fun onPostHistoryUpdate() {
@@ -85,7 +82,6 @@ class TaskHistoryListAdapter(private val activity: Activity, private val taskHis
             (activity as MainActivity).scrollToPosition(lastPosition)
         }
     }
-
 
     // --------------------- VIEW HOLDER ---------------------
 

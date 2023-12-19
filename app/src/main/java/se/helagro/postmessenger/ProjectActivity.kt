@@ -15,6 +15,7 @@ import se.helagro.postmessenger.taskitem.Task
 import se.helagro.postmessenger.taskitem.TaskStatus
 
 class ProjectActivity() : AppCompatActivity() {
+
     //-------------------------------<  VARIABLES  >----------------------------
 
     // CONSTANTS
@@ -72,7 +73,7 @@ class ProjectActivity() : AppCompatActivity() {
             nextTask()
         }
 
-        if (tasks != null && tasks!!.isNotEmpty()) binding!!.inputField.setText(tasks!![0].content)
+        if (tasks != null && tasks!!.isNotEmpty()) setText(tasks!![0].content)
     }
 
     //---------------------------------<  TASKS  >------------------------------
@@ -88,14 +89,11 @@ class ProjectActivity() : AppCompatActivity() {
     }
 
     private fun updateTask() {
-        if (tasks == null) return
-        if (binding == null) return
-        if (taskI >= tasks!!.size) return
+        if (tasks == null || binding == null || taskI >= tasks!!.size) return
 
         val content = binding!!.inputField.text.toString().trim()
         val task = tasks!![taskI]
 
-        Log.v(TAG, "$task, $content")
         if (content == task.toString()) {
             Log.v(TAG, "No changes to task \"$content\"")
             return
@@ -105,15 +103,9 @@ class ProjectActivity() : AppCompatActivity() {
         newTask.onUpdateStatus = {
             if (newTask.status == TaskStatus.SUCCESS) {
                 newTask.onUpdateStatus = null
-                networkHandler.closeTask(task.id, object : NetworkCallback {
-                    override fun onUpdate(code: Int, body: String?) {
-                        if (code == 200 || code == 204) Log.v(TAG, "Closed task")
-                        else alert("Failed to close task: $code")
-                    }
-                })
-            } else if (newTask.status == TaskStatus.FAILURE) {
+                closeTask()
+            } else if (newTask.status == TaskStatus.FAILURE)
                 alert("Failed to update task")
-            }
         }
 
         networkHandler.postTask(newTask)
@@ -121,8 +113,9 @@ class ProjectActivity() : AppCompatActivity() {
 
     private fun closeTask() {
         if (tasks == null) return
+        val taskID = tasks!![taskI].id
 
-        networkHandler.closeTask(tasks!![taskI].id, object : NetworkCallback {
+        networkHandler.closeTask(taskID, object : NetworkCallback {
             override fun onUpdate(code: Int, body: String?) {
                 if (code == 200 || code == 204) Log.v(TAG, "Closed task")
                 else alert("Failed to close task: $code")
@@ -139,18 +132,14 @@ class ProjectActivity() : AppCompatActivity() {
         binding!!.inboxCount.text = "${taskI + 1}/${tasks!!.size}"
         val task = tasks!![taskI]
 
-        val text = "$task "
-
-        binding!!.inputField.setText(text)
-        binding!!.inputField.setSelection(text.length - 1)
+        setText("$task ")
     }
 
     private fun onAddTask() {
         addTask()
 
         val text = tasks!![taskI].content + " "
-        binding!!.inputField.setText(tasks!![taskI].content)
-        binding!!.inputField.setSelection(text.length - 1)
+        setText(text)
 
         isAdding = false
     }
@@ -166,13 +155,19 @@ class ProjectActivity() : AppCompatActivity() {
         if (item.itemId == android.R.id.home) finish()
         if (item.itemId == R.id.action_add) {
             isAdding = true
-            binding!!.inputField.setText("")
+            setText("")
         }
 
         return super.onOptionsItemSelected(item)
     }
 
     //--------------------------------<  HELPERS  >-----------------------------
+
+    private fun setText(text: String) {
+        binding!!.inputField.setText(text)
+
+        if (text.length > 1) binding!!.inputField.setSelection(text.length - 1)
+    }
 
     private fun alert(msg: String?) {
         if (msg == null) return
